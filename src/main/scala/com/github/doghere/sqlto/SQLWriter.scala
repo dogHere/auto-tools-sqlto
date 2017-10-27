@@ -10,6 +10,9 @@ import com.norbitltd.spoiwo.natures.xlsx.Model2XlsxConversions._
 import Tool._
 import org.rosuda.REngine.REXP
 
+import scala.collection.mutable.ListBuffer
+import scala.xml.NodeSeq
+
 object SQLWriter{
 
   def main(args: Array[String]): Unit = {
@@ -110,6 +113,60 @@ object SQLWriter{
       csvFilePrinter.printRecords(resultSet)
       csvFilePrinter.flush()
       csvFilePrinter.close()
+      true
+    }
+
+    def toHtml(filename:String):Boolean = {
+      val writer = new FileWriter(filename)
+      val header = getHeader(resultSet)
+
+      val t =
+        <div>
+          <style>{
+            """
+                   table {
+                     font-family: arial, sans-serif;
+                     border-collapse: collapse;
+                     width: 100%;
+                   }
+
+                   td, th {
+                     border: 1px solid #dddddd;
+                     text-align: left;
+                     padding: 8px;
+                   }
+
+                   tr:nth-child(even) {
+                      background-color: #dddddd;
+                   }
+            """.stripMargin}
+
+        </style>
+
+          <table border="1" cellspacing="0" cellpadding="0" >
+          {<tr>{header.map(k=> <td><center>{k}</center></td>)}</tr>}
+          {
+            val count = resultSet.getMetaData.getColumnCount
+
+            val l = ListBuffer[NodeSeq]()
+            while (resultSet.next()){
+              l+=
+              <tr>{
+              (1 to count).map(i => {
+                val v = resultSet.getObject(i)
+               <td><center>{if(v==null)""else v} </center></td>
+              })}
+              </tr>
+            }
+            l
+          }
+
+        </table>
+        </div>
+
+      writer.write(t.toString())
+      writer.flush()
+      writer.close()
       true
     }
 
