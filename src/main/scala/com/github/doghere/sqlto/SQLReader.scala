@@ -2,6 +2,8 @@ package com.github.doghere.sqlto
 
 import java.sql.{Connection, ResultSet, SQLException, Statement}
 
+import oracle.jdbc.OracleResultSet
+
 import scala.language.implicitConversions
 
 object SQLReader {
@@ -45,8 +47,7 @@ class SQLReader private(val connection: Option[Connection]) {
           None
         } else {
           // streams
-          val st = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-            java.sql.ResultSet.CONCUR_READ_ONLY)
+          val st = con.createStatement()
 //          st.setFetchSize(Integer.MIN_VALUE)
           Some(st)
         }

@@ -103,11 +103,9 @@ object SQLWriter{
 
 
   implicit class Table(val resultSet: ResultSet) {
+    private var isRead = false
     def toCSV(filename: String): Boolean = {
-//      import org.apache.commons.csv.CSVParser
-//      csvFileParser = new CSVParser(fileReader, csvFileFormat)
-      resultSet.first()
-      resultSet.previous()
+
 
       val fileWriter = new FileWriter(filename)
       val csvFilePrinter = new CSVPrinter(fileWriter, CSVFormat.MYSQL)
@@ -116,12 +114,11 @@ object SQLWriter{
       csvFilePrinter.printRecords(resultSet)
       csvFilePrinter.flush()
       csvFilePrinter.close()
+
       true
     }
 
     def toHtml(filename:String):Boolean = {
-      resultSet.first()
-      resultSet.previous()
 
       val writer = new FileWriter(filename)
       val header = getHeader(resultSet)
@@ -280,12 +277,11 @@ object SQLWriter{
       writer.write(t.toString())
       writer.flush()
       writer.close()
+
       true
     }
 
     def toExcel(outputFilepath: String,sheetName:String="sheet1"): Boolean = {
-      resultSet.first()
-      resultSet.previous()
 
       val headerStyle =
         CellStyle(fillPattern = CellFill.Solid,
@@ -324,14 +320,13 @@ object SQLWriter{
         )
       
       sheet.saveAsXlsx(outputFilepath)
+
       true
     }
 
 
 
     def toTable(connection: Connection,tableName:String,ifCreate:Boolean=true,cacheOnce:Boolean=false):Boolean={
-      resultSet.first()
-      resultSet.previous()
 
       val tableExists = exists(connection,tableName)
 
@@ -407,6 +402,7 @@ object SQLWriter{
       connection.commit()
       ps.close()
       connection.setAutoCommit(true)
+
       true
     }
   }
