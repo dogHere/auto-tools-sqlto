@@ -2,6 +2,7 @@ package com.github.doghere.sqlto
 
 import java.io.{File, FileWriter}
 import java.sql.{Connection, DriverManager, ResultSet, Timestamp}
+import java.text.DecimalFormat
 
 import com.norbitltd.spoiwo.model._
 import com.norbitltd.spoiwo.model.enums.CellFill
@@ -122,7 +123,7 @@ object SQLWriter{
 
       val writer = new FileWriter(filename)
       val header = getHeader(resultSet)
-
+      val df1 = new DecimalFormat("0.00")
       val t =
         <div>
           <meta charset="utf-8"/>
@@ -264,7 +265,21 @@ object SQLWriter{
               <tr>{
               (1 to count).map(i => {
                 val v = resultSet.getObject(i)
-               <td><center>{if(v==null)""else v} </center></td>
+                val t = resultSet.getMetaData.getColumnClassName(i)
+               <td><center> {
+                  if(v==null)""else {
+                    if(t == "java.lang.Double") new java.math.BigDecimal(v.asInstanceOf[java.lang.Double])
+                    else if(t == "java.lang.Float")  new java.math.BigDecimal(v.asInstanceOf[java.lang.Float].toDouble)
+                    else if(v.toString.contains("E")){
+                      try{
+                        df1.format(new java.math.BigDecimal(v.asInstanceOf[java.lang.Double]))
+                      }catch {
+                        case e:Exception => v
+                      }
+                    }
+                    else v
+                  }
+                 } </center></td>
               })}
               </tr>
             }
