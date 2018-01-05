@@ -15,8 +15,8 @@ SQLReader.use(cacheConnection)(cacheReader => {
           // do something ... 
           resultSet.toTable(memConnection,"table name")
           // select from memory
-          SQLReader.use(cacheConnection)(memReader=>{
-            //select 
+          SQLReader.use(memConnection)(memReader=>{
+             // deal with memReader
           })
       }
   }
