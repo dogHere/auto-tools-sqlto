@@ -8,19 +8,19 @@ A tool to read data from database then write data into database,html,csv,excel .
 import com.github.doghere.sqlto._
 
 SQLReader.use(cacheConnection)(cacheReader => {
-  reader.fetch("select * from dual") match 
-  {
-      case None => println("nothing")
-      case Some(resultSet) => {
-          // do something ... 
-          resultSet.toTable(memConnection,"table name")
-          // select from memory
-          SQLReader.use(memConnection)(memReader=>{
-             // deal with memReader
-          })
+      reader.fetch("select * from dual") match {
+          case None => println("nothing")
+          case Some(resultSet) => {
+              // do something ... 
+              resultSet.toTable(memConnection,"table name")
+              // select from memory
+              SQLReader.use(memConnection)(memReader=>{
+                 // deal with memReader
+              })
+          }
       }
-  }
-}
+    }
+）
 
 ```
 
